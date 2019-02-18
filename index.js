@@ -1,0 +1,29 @@
+const config = require('config');
+const mongoose = require('mongoose');
+const genres = require('./routes/genre');
+const customers =  require('./routes/customer');
+const auth = require('./routes/auth');
+const users = require('./routes/user');
+const express = require('express');
+const app = express();
+
+if (!config.get('jwtPrivateKey')){
+    console.error('Private Key is not defined');
+    process.exit(1);
+}
+
+mongoose.connect('mongodb://localhost/vidly', {
+    useNewUrlParser: true,
+    useCreateIndex: true
+})
+.then(() => console.log('Connected to MongoDB...'))
+.catch(err => console.error('Could not connect to MongoDB'));
+
+app.use(express.json());
+app.use('/api/genres', genres);
+app.use('/api/customers', customers);
+app.use('/api/users', users);
+app.use('/api/auth', auth)
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}`));
